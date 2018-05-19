@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+	body, html,#allmap {width: 100%;height: 100%;overflow: hidden;margin:0;font-family:"微软雅黑";}
+	</style>
+	<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=8PgV7Xkq7h5EBYMxe9j7uQuMo4jVA8C2"></script>
+	<title>车辆坐标信息</title>
+</head>
+<body>
+	<div id="allmap"></div>
+</body>
+</html>
+<script type="text/javascript">
+    // 百度地图API功能
+    var map = new BMap.Map("allmap");                               //创建Map实例
+    map.centerAndZoom(new BMap.Point(108.327137, 22.823349), 14);   //初始化设置中心点坐标和地图级别
+    map.addControl(new BMap.MapTypeControl());                      //添加地图类型控件
+    map.setCurrentCity("南宁市");                                  //设置地图显示的城市 此项是必须设置的
+    map.enableScrollWheelZoom(true);                               //开启鼠标滚轮缩放
+
+    var JsCarNum = "";
+
+    function justmarkfun(JD, WD, CARNUM) {
+        var gpsPoint = new BMap.Point(JD, WD);
+        var convertor = new BMap.Convertor();
+
+        JsCarNum = CARNUM;
+
+        //var marker1 = new BMap.Marker(gpsPoint);     // 创建标注
+        map.centerAndZoom(gpsPoint, 14)
+        //window.map.addOverlay(marker1);              // 将标注添加到地图中
+
+        var pointArr = [];
+        pointArr.push(gpsPoint);
+
+        convertor.translate(pointArr, 1, 5, translateCallback);
+    }
+
+    //坐标转换完之后的回调函数
+    translateCallback = function (data) {
+
+        if (data.status === 0) {
+            //显示偏移正常的坐标值
+            //var x = data.points[0]['lng'];
+            //var y = data.points[0]['lat'];
+            //alert(x + ',' + y);
+            map.clearOverlays();
+            var marker2 = new BMap.Marker(data.points[0]);
+            window.map.addOverlay(marker2);                 //(法1+window) 将标注添加到地图中
+            //map.addOverlay(marker2);                      //(法2) 将标注添加到地图中
+            
+            //window.map.setCenter(data.points[0]);         //以该坐标点为中心显示地图
+            //map.panTo(data.points[0]);
+            marker2.setAnimation(BMAP_ANIMATION_BOUNCE);    //跳动的动画
+            
+            var label = new BMap.Label("车辆编号:" + JsCarNum, { offset: new BMap.Size(-60, -35) });
+            marker2.setLabel(label);
+        }
+    }
+
+    function RemoveMarker()
+    {
+        map.clearOverlays();
+        map.centerAndZoom(new BMap.Point(108.327137, 22.823349), 14);   //初始化设置中心点坐标和地图级别
+        map.addControl(new BMap.MapTypeControl());                      //添加地图类型控件
+        map.setCurrentCity("南宁市");                                  //设置地图显示的城市 此项是必须设置的
+        map.enableScrollWheelZoom(true);                               //开启鼠标滚轮缩放
+    }
+
+</script>
